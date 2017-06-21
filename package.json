@@ -1,0 +1,21 @@
+{
+  "name": "chat-app",
+  "version": "1.0.0",
+  "description": "Chat App",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "6.10.3"
+  },
+  "keywords": [
+    "Chat App"
+  ],
+  "author": "Rishab Bokaria",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
+}
