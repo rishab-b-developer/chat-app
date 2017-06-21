@@ -12,6 +12,22 @@ socket.on('disconnect', function () {
 
 socket.on('NewMessage', function (message) {
     console.log('New Message:\n', message);
+
+    var timestamp = message.createdAt; // replace your timestamp
+    var date = new Date(timestamp);
+    var dateStr = date.toLocaleString();
+    var li = jQuery('<li></li>');
+    li.text(`${message.from}:\t${message.text}\tat ${dateStr}`);
+    jQuery('#messages').append(li);
+});
+
+jQuery('#message-form').on('submit', function (event) {
+    event.preventDefault();
+    socket.emit('CreateMessage', {
+        text: jQuery('[name="message"]').val(),
+        from: UUID
+    });
+    jQuery('[name="message"]').val("")
 });
 
 function guid() {
@@ -23,7 +39,3 @@ function guid() {
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
         s4() + '-' + s4() + s4() + s4();
 }
-
-//var timestamp = message.createdAt; // replace your timestamp
-//var date = new Date(timestamp);
-//var dateStr = date.toLocaleString();
