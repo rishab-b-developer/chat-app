@@ -16,11 +16,15 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New connection made');
 
-    socket.emit('NewMessage', {
-        text: 'Do you join me for movie tonight?',
-        from: 'Ria',
+    var firstMessage = {
+        text: 'Welcome to chat!',
+        from: 'Admin',
         createdAt: Date.now()
-    });
+    };
+    socket.emit('NewMessage', firstMessage);
+
+    firstMessage.text = 'A new user has joined the chat.';
+    socket.broadcast.emit('NewMessage', firstMessage);
 
     socket.on('CreateMessage', (message) => {
         message.createdAt = Date.now();
