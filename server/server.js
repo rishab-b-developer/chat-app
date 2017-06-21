@@ -42,12 +42,18 @@ io.on('connection', (socket) => {
     });
 
     socket.on('createMessage', (message, callback) => {
-        io.to(message.room).emit('newMessage', generateMessage(message.from, message.text));
+        var user = users.removeUser(socket.id);
+        if (user && isRealString(message.text)) {
+            io.to(user.room).emit('newMessage', generateMessage(user.from, message.text));
+        }
         callback();
     });
 
     socket.on('createLocationMessage', (location, callback) => {
-        io.to(location.room).emit('newLocationMessage', generateLocationMessage(location.from, location.latitude, location.longitude));
+        var user = users.removeUser(socket.id);
+        if (user) {
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.from, location.latitude, location.longitude));
+        }
         callback();
     });
 
