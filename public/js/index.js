@@ -21,25 +21,17 @@ socket.on('disconnect', function () {
 });
 
 socket.on('NewMessage', function (message) {
-    console.log('New Message:\n', message);
-
-    var timestamp = message.createdAt; // replace your timestamp
-    var date = new Date(timestamp);
-    var dateStr = date.toLocaleString();
+    var dateStr = moment(message.createdAt).format('h:mm a');
     var li = jQuery('<li></li>');
-    li.text(`${message.from}:\t${message.text}\tat ${dateStr}`);
+    li.text(`${message.from}    ${dateStr}:    ${message.text}`);
     jQuery('#messages').append(li);
 });
 
 socket.on('NewLocationMessage', function (message) {
-    console.log('New Location Message:\n', message);
-
-    var timestamp = message.createdAt; // replace your timestamp
-    var date = new Date(timestamp);
-    var dateStr = date.toLocaleString();
+    var dateStr = moment(message.createdAt).format('h:mm a');
     var li = jQuery('<li></li>');
-    var a = jQuery('<a target="_blank">My Current Location</a>');
-    li.text(`${message.from} at ${dateStr}`);
+    var a = jQuery('<a target="_blank">    My Current Location    </a>');
+    li.text(`${message.from}    ${dateStr}:`);
     a.attr('href', message.url);
     li.append(a);
     jQuery('#messages').append(li);
@@ -63,7 +55,6 @@ locationButton.on('click', () => {
     }
     locationButton.attr('disabled', 'disabled').text('Sending location...');
     navigator.geolocation.getCurrentPosition(function (position) {
-        console.log(position);
         socket.emit('CreateLocationMessage', {
             from: UUID,
             latitude: position.coords.latitude,
