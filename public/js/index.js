@@ -2,6 +2,10 @@ var socket = io();
 
 socket.on('connect', function () {
     console.log('conneced to server');
+    socket.emit('CreateMessage', {
+        text: 'Yeah! lets meet up at 7!',
+        from: 'Rishab'
+    });
 });
 
 socket.on('disconnect', function () {
@@ -9,15 +13,11 @@ socket.on('disconnect', function () {
 });
 
 socket.on('NewMessage', function (message) {
-    console.log('New Message');
-    var timestamp = message.createdAt; // replace your timestamp
-    var date = new Date(timestamp);
-    var reply = prompt(`You received a new message saying \"${message.text}\" from ${message.from} at ${date.toLocaleString()}.\n Do you want to reply?`, 'Enter your reply here.');
-
-    if (reply) {
-        socket.emit('CreateMessage', {
-            text: reply,
-            from: 'Rishab'
-        });
-    }
+    console.log('New Message:\n', message);
 });
+
+
+
+//var timestamp = message.createdAt; // replace your timestamp
+//var date = new Date(timestamp);
+//var dateStr = date.toLocaleString();
