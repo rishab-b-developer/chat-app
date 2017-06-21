@@ -3,12 +3,15 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-const {generateMessage} = require('./utils/message');
+const {
+    generateMessage,
+    generateLocationMessage
+} = require('./utils/message');
 
 
 const port = process.env.PORT || 3000;
 const publicPath = path.join(__dirname, '../public');
-const admin = 'admin';
+const admin = 'Admin';
 
 var app = express();
 var server = http.createServer(app);
@@ -25,6 +28,10 @@ io.on('connection', (socket) => {
     socket.on('CreateMessage', (message) => {
         console.log(`New message recevied:\n${JSON.stringify(message, undefined, 4)}`);
         io.emit('NewMessage', generateMessage(message.from, message.text));
+    });
+
+    socket.on('CreateLocationMessage', (location) => {
+        io.emit('NewLocationMessage', generateLocationMessage(location.from, location.latitude, location.longitude));
     });
 
     socket.on('disconnect', () => {
