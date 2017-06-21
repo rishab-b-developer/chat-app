@@ -15,6 +15,18 @@ app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
     console.log('New connection made');
+
+    socket.emit('NewMessage', {
+        text: 'Do you join me for movie tonight?',
+        from: 'Ria',
+        createdAt: Date.now()
+    });
+
+    socket.on('CreateMessage', (message) => {
+        message.createdAt = Date.now();
+        console.log(`New message recevied:\n${JSON.stringify(message, undefined, 4)}`);
+    });
+
     socket.on('disconnect', () => {
         console.log('New disconnection made');
     });
