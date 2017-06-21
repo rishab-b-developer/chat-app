@@ -25,13 +25,14 @@ io.on('connection', (socket) => {
     socket.emit('NewMessage', generateMessage(admin, 'Welcome to chat!'));
     socket.broadcast.emit('NewMessage', generateMessage(admin, 'A new user has joined the chat.'));
 
-    socket.on('CreateMessage', (message) => {
-        console.log(`New message recevied:\n${JSON.stringify(message, undefined, 4)}`);
+    socket.on('CreateMessage', (message, callback) => {
         io.emit('NewMessage', generateMessage(message.from, message.text));
+        callback();
     });
 
-    socket.on('CreateLocationMessage', (location) => {
+    socket.on('CreateLocationMessage', (location, callback) => {
         io.emit('NewLocationMessage', generateLocationMessage(location.from, location.latitude, location.longitude));
+        callback();
     });
 
     socket.on('disconnect', () => {
