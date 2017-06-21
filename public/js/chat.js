@@ -1,15 +1,5 @@
 var socket = io();
 
-function guid() {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-        s4() + '-' + s4() + s4() + s4();
-};
-
 function getDisplayTime(timestamp) {
     return moment(timestamp).format('h:mm a');
 };
@@ -31,11 +21,9 @@ function scrollToBottom() {
     var scrollTop = messages.prop('scrollTop');
     var scrollHeight = messages.prop('scrollHeight');
     var newMessageHeight = newMessage.innerHeight();
-    var lastMessageHeight = newMessage.prev().innerHeight()?newMessage.prev().innerHeight():0;
+    var lastMessageHeight = newMessage.prev().innerHeight() ? newMessage.prev().innerHeight() : 0;
 
-    console.log(`cH:${clientHeight}  sT:${scrollTop}  sH:${scrollHeight}  nMH:${newMessageHeight}  lMH:${lastMessageHeight}`);
-
-    if ((clientHeight+scrollTop+newMessageHeight+lastMessageHeight) >= scrollHeight) {
+    if ((clientHeight + scrollTop + newMessageHeight + lastMessageHeight) >= scrollHeight) {
         messages.scrollTop(scrollHeight);
     }
 };
@@ -49,30 +37,51 @@ function showChatMessage(chatMessage) {
     scrollToBottom();
 };
 
-const UUID = guid().toUpperCase();
-
 socket.on('connect', function () {
     console.log('conneced to server');
+    var params = jQuery.deparam(window.location.search);
+    socket.emit('join', params, function (err) {
+        if (err) {
+            alert(err);
+            window.location.href = '/';
+        } else {
+            console.log('joined a chat room');
+        }
+    });
 });
 
 socket.on('disconnect', function () {
     console.log('disconneced from server');
 });
 
-socket.on('NewMessage', function (textMessage) {
+socket.on('updateUserList', function (users) {
+    var ol = jQuery('<ol></ol');
+    users.forEach(function(user) {
+        var li = jQuery('<li></li>');
+        li.text(user);
+        ol.append(li);
+    });
+    jQuery('#users').html(ol);
+});
+
+socket.on('newMessage', function (textMessage) {
     showChatMessage(textMessage);
 });
 
-socket.on('NewLocationMessage', function (locationMessage) {
+socket.on('newLocationMessage', function (locationMessage) {
     showChatMessage(locationMessage);
 });
 
 jQuery('#message-form').on('submit', function (event) {
     event.preventDefault();
+
     var messageTextBox = jQuery('[name="message"]');
-    socket.emit('CreateMessage', {
+    var params = jQuery.deparam(window.location.search);
+
+    socket.emit('createMessage', {
         text: messageTextBox.val(),
-        from: UUID
+        from: params.name,
+        room: params.room
     }, function () {
         messageTextBox.val("");
     });
@@ -85,10 +94,13 @@ locationButton.on('click', () => {
     }
     locationButton.attr('disabled', 'disabled').text('Sending location...');
     navigator.geolocation.getCurrentPosition(function (position) {
-        socket.emit('CreateLocationMessage', {
-            from: UUID,
+        var params = jQuery.deparam(window.location.search);
+        socket.emit('createLocationMessage', {
+            from: params.name,
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            longitude: position.coords.longitude,
+            room: params.room
+
         }, function () {
             locationButton.removeAttr('disabled').text('Send Location');
         });
