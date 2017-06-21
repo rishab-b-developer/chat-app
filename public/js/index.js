@@ -8,7 +8,46 @@ function guid() {
     }
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
         s4() + '-' + s4() + s4() + s4();
-}
+};
+
+function getDisplayTime(timestamp) {
+    return moment(timestamp).format('h:mm a');
+};
+
+function getTemplateInfo(chatMessage) {
+    return {
+        from: chatMessage.from,
+        text: chatMessage.text,
+        url: chatMessage.url,
+        createdAt: getDisplayTime(chatMessage.createdAt)
+    };
+};
+
+function scrollToBottom() {
+    var messages = jQuery('#messages');
+    var newMessage = messages.children('li:last-child');
+
+    var clientHeight = messages.prop('clientHeight');
+    var scrollTop = messages.prop('scrollTop');
+    var scrollHeight = messages.prop('scrollHeight');
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHeight = newMessage.prev().innerHeight()?newMessage.prev().innerHeight():0;
+
+    console.log(`cH:${clientHeight}  sT:${scrollTop}  sH:${scrollHeight}  nMH:${newMessageHeight}  lMH:${lastMessageHeight}`);
+
+    if ((clientHeight+scrollTop+newMessageHeight+lastMessageHeight) >= scrollHeight) {
+        messages.scrollTop(scrollHeight);
+    }
+};
+
+function showChatMessage(chatMessage) {
+    var messages = jQuery('#messages');
+    var templateId = (chatMessage.url) ? '#location-message-template' : '#message-template';
+    var template = jQuery(templateId).html();
+    var html = Mustache.render(template, getTemplateInfo(chatMessage));
+    messages.append(html);
+    scrollToBottom();
+};
 
 const UUID = guid().toUpperCase();
 
@@ -20,26 +59,12 @@ socket.on('disconnect', function () {
     console.log('disconneced from server');
 });
 
-socket.on('NewMessage', function (message) {
-    var dateStr = moment(message.createdAt).format('h:mm a');
-    var template = jQuery('#message-template').html();
-    var html = Mustache.render(template, {
-        from: message.from,
-        text: message.text,
-        createdAt: dateStr
-    });
-    jQuery('#messages').append(html);
+socket.on('NewMessage', function (textMessage) {
+    showChatMessage(textMessage);
 });
 
-socket.on('NewLocationMessage', function (message) {
-    var dateStr = moment(message.createdAt).format('h:mm a');
-    var template = jQuery('#location-message-template').html();
-    var html = Mustache.render(template, {
-        from: message.from,
-        url: message.url,
-        createdAt: dateStr
-    });
-    jQuery('#messages').append(html);
+socket.on('NewLocationMessage', function (locationMessage) {
+    showChatMessage(locationMessage);
 });
 
 jQuery('#message-form').on('submit', function (event) {
