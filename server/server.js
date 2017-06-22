@@ -27,9 +27,17 @@ app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
     socket.on('join', (params, callback) => {
+        var error;
         if (!isRealString(params.name) || !isRealString(params.room)) {
-            return callback('name & room name are required');
+            error = 'name & room name are required';  
+        } else if (users.getUserByName(params.name) != null) {
+            error = 'user with same name exists!';
         }
+
+        if (error) {
+            return callback(error);
+        }
+
         socket.join(params.room);
         socket.emit('newMessage', generateMessage(admin, `Hi ${params.name}, Welcome to ${params.room} chat room!`));
 
@@ -42,17 +50,17 @@ io.on('connection', (socket) => {
     });
 
     socket.on('createMessage', (message, callback) => {
-        var user = users.removeUser(socket.id);
+        var user = users.getUserById(socket.id);
         if (user && isRealString(message.text)) {
-            io.to(user.room).emit('newMessage', generateMessage(user.from, message.text));
+            io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
         }
         callback();
     });
 
     socket.on('createLocationMessage', (location, callback) => {
-        var user = users.removeUser(socket.id);
+        var user = users.getUserById(socket.id);
         if (user) {
-            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.from, location.latitude, location.longitude));
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, location.latitude, location.longitude));
         }
         callback();
     });

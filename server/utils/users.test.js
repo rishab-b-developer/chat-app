@@ -32,17 +32,24 @@ describe('Users', () => {
     });
 
     it('should remove user with id 456', () => {
-        var userId = 456;
-        var user = users.removeUser(userId);
+        var id = 456;
+        var user = users.removeUser(id);
         expect(user).toExist();
         expect(users.list.length).toBe(2);
     });
 
-    it('should get user with id 123', () => {
-        var userId = 123;
-        var user = users.getUser(userId);
+    it('should get user by id 123', () => {
+        var id = 123;
+        var user = users.getUserById(id);
         expect(user).toExist();
-        expect(user.id).toBe(userId);
+        expect(user.id).toBe(id);
+    });
+
+    it('should get user by name Y', () => {
+        var name = 'Y';
+        var user = users.getUserByName(name);
+        expect(user).toExist();
+        expect(user.name).toBe(name);
     });
 
     it('should get users for room A', () => {
