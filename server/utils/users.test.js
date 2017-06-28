@@ -22,6 +22,14 @@ describe('Users', () => {
             id: 789,
             name: 'Z',
             room: 'A'
+        }, {
+            id: 678,
+            name: 'F',
+            room: 'C'
+        }, {
+            id: 345,
+            name: 'G',
+            room: 'D'
         }]
     });
 
@@ -35,7 +43,7 @@ describe('Users', () => {
         var id = 456;
         var user = users.removeUser(id);
         expect(user).toExist();
-        expect(users.list.length).toBe(2);
+        expect(users.list.length).toBe(4);
     });
 
     it('should get user by id 123', () => {
@@ -57,5 +65,11 @@ describe('Users', () => {
         var roomAUsers = users.getUsersList(roomA);
         expect(roomAUsers).toExist();
         expect(roomAUsers).toEqual(['X', 'Z'])
+    });
+
+    it('should get rooms currently open', () => {
+        var rooms = users.getRoomsList();
+        expect(rooms).toExist();
+        expect(rooms.length).toBe(4);
     });
 });

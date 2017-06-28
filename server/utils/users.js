@@ -22,30 +22,48 @@ class Users {
     };
 
     getUserById(id) {
-        var filteredUsers = this.list.filter(listUser => listUser.id === id);
-        if (filteredUsers) {
-            var user = filteredUsers[0];
-            return user;
+        if (this.list.length > 0) {
+            var filteredUsers = this.list.filter(listUser => listUser.id === id);
+            if (filteredUsers) {
+                var user = filteredUsers[0];
+                return user;
+            }
         }
         return null;
     };
 
     getUserByName(name) {
-        var filteredUsers = this.list.filter(listUser => listUser.name === name);
-        if (filteredUsers) {
-            var user = filteredUsers[0];
-            return user;
+        if (this.list.length > 0) {
+            var filteredUsers = this.list.filter(listUser => listUser.name === name);
+            if (filteredUsers) {
+                var user = filteredUsers[0];
+                return user;
+            }
         }
         return null;
     };
 
     getUsersList(room) {
-        var filteredUsers = this.list.filter(listUser => listUser.room === room);
-        if (filteredUsers) {
-            return filteredUsers.map((user) => user.name);
+        if (this.list.length > 0) {
+            var filteredUsers = this.list.filter(listUser => listUser.room === room);
+            if (filteredUsers) {
+                return filteredUsers.map((user) => user.name);
+            }
         }
         return null;
     };
+
+    getRoomsList() {
+        if (this.list.length > 0) {
+            var roomsObj = {};
+            this.list.forEach(function(user) 
+            {
+                roomsObj[user.room] = user.room;
+            });
+            return Object.keys(roomsObj);
+        }
+        return null;
+    }
 }
 
 module.exports = {

@@ -26,6 +26,12 @@ var users = new Users();
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
+
+    socket.on('connected', (params, callback) => {
+        var rooms = users.getRoomsList();
+        callback(rooms);
+    });
+
     socket.on('join', (params, callback) => {
         var error;
         if (!isRealString(params.name) || !isRealString(params.room)) {

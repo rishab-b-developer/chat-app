@@ -14,19 +14,36 @@
             <div class="form-field">
                 <h3>Join a Chat</h3>
             </div>
+
             <div class="form-field">
                 <label>Display Name</label>
                 <input type="text" name="name" autofocus autocomplete="false" />
             </div>
+
             <div class="form-field">
-                <label>Room Name</label>
-                <input type="text" name="room" />
+                <label>Select/Create a Chat Room</label>
+                <input id="chat-room-name" type="text" name="room"/>
+                <select id="select-room"></select>
             </div>
+
             <div class="form-field">
                 <button>Join</button>
             </div>
         </form>
     </div>
+
+
+    <script id="room-template" type="text/template">
+        <option class="room" value={{room}}>
+            {{room}}
+        </option>
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/libs/jquery-3.2.1.min.js"></script>   
+    <script src="/js/libs/mustache.js"></script>
+    <script src="js/index.js"></script> 
+
 </body>
 
 </html>
